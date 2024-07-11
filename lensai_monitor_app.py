@@ -19,16 +19,53 @@ import argparse
 import math
 
 
+# Set the page configuration
 st.set_page_config(page_title="LensAI Monitor", layout="wide")
-st.markdown("<h1 style='text-align: center; color: #6C63FF;'>LensAI Observer</h1>", unsafe_allow_html=True)
-st.markdown("<h3 style='text-align: center; color: #6C63FF;'>Model and Data Observality</h3>", unsafe_allow_html=True)
-st.markdown("<h2 style='text-align: center; color: #6C63FF;'>Monitoring</h2>", unsafe_allow_html=True)
-st.markdown("<hr>", unsafe_allow_html=True)
-st.markdown("""
-""", unsafe_allow_html=True)
 
+# Define the CSS styles
+header_css = """
+<style>
+    .header {
+        text-align: center;
+        color: #6C63FF;
+        margin: 20px 0;
+    }
+    .header h1 {
+        font-size: 3em;
+        margin-bottom: 0.5em;
+    }
+    .header h3 {
+        font-size: 1.5em;
+        margin-bottom: 0.5em;
+    }
+    .header h2 {
+        font-size: 2em;
+        margin-bottom: 1em;
+    }
+    .header img {
+        width: 100px;
+        margin-bottom: 1em;
+    }
+</style>
+"""
+
+# Apply the CSS styles
+st.markdown(header_css, unsafe_allow_html=True)
+
+# Create the header content
+header_content = """
+<div class="header">
+    <h1>📊 LensAI Demo App</h1>
+    <h2>🔍 Model and Data Observability</h2>
+</div>
+<hr>
+"""
+
+# Render the header content
+st.markdown(header_content, unsafe_allow_html=True)
 
 dist_placeholder = st.empty()
+
 
 def get_histogram(sketch, num_splits=30):
     """
@@ -58,7 +95,19 @@ def get_histogram(sketch, num_splits=30):
 
     return x, pmf
 
+
 def plot_histograms(time_series_stats, selected_timestamp, reference_stats=None):
+    """
+    Plots histograms for the provided time series statistics.
+
+    Args:
+        time_series_stats: Time series statistics.
+        selected_timestamp: The selected timestamp.
+        reference_stats: Reference statistics (optional).
+
+    Returns:
+        List of plotly figures.
+    """
     figures = []
     for metric, sub_metrics in next(iter(time_series_stats.values())).items():
         fig = go.Figure()
@@ -110,6 +159,15 @@ def plot_histograms(time_series_stats, selected_timestamp, reference_stats=None)
     return figures
 
 def convert_timestamp(timestamp):
+    """
+    Converts a timestamp to a human-readable format.
+
+    Args:
+        timestamp: The timestamp to convert.
+
+    Returns:
+        The converted timestamp as a string.
+    """
     try:
         # Handle both 10-digit and 16-digit timestamps
         if len(timestamp) == 10:
@@ -120,8 +178,18 @@ def convert_timestamp(timestamp):
         st.error(f"Error converting timestamp {timestamp}: {e}")
         return timestamp
 
+
 # Function to display images with pagination
 def plot_images(sensor_sample_images, selected_sensor, selected_timestamp):
+    """
+    Plots images with pagination.
+
+    Args:
+        sensor_sample_images: Dictionary of sample images.
+        selected_sensor: The selected sensor.
+        selected_timestamp: The selected timestamp.
+    """
+    
     st.text("Sampled images based on the metric thresholds set for each sensor, where the model is most uncertain")
     try:
         images_info = sensor_sample_images[selected_sensor][selected_timestamp]
@@ -171,6 +239,15 @@ def plot_images(sensor_sample_images, selected_sensor, selected_timestamp):
             st.plotly_chart(fig)
 
 def plot_distance_metrics_time_series(distance_metrics_over_time):
+     """
+    Plots distance metrics over time.
+
+    Args:
+        distance_metrics_over_time: Dictionary of distance metrics over time.
+
+    Returns:
+        Plotly figure.
+    """
     fig = go.Figure()
     for time_point, metrics in distance_metrics_over_time.items():
         for metric, sub_metrics in metrics.items():
@@ -194,6 +271,18 @@ def plot_distance_metrics_time_series(distance_metrics_over_time):
     return fig
 
 def compute_distance_metrics(stats1, stats2, metric_name):
+    """
+    Computes distance metrics between two sets of statistics.
+
+    Args:
+        stats1: The first set of statistics.
+        stats2: The second set of statistics.
+        metric_name: The name of the distance metric to use.
+
+    Returns:
+        Dictionary of distance metrics.
+    """
+
     def recursive_distance_computation(dict1, dict2, path=[]):
         distance_metrics = {}
         for key, value in dict1.items():
@@ -225,6 +314,7 @@ def display_distance_metrics(stats1, stats2, selected_metric):
     distance_plot = plot_distance_metrics_time_series(distance_metrics)
     dist_placeholder.plotly_chart(distance_plot)
 
+
 def extract_info(file_path):
     pattern_sensors = re.compile(r'/data/(sensor\d+)/(\d+)/(modelstats|imagestats|samples)/(.+?)(?:_(\d+))?\.bin')
     pattern_reference = re.compile(r'/data/reference/(\d+)/(modelstats|imagestats|samples)/(.+?)(?:_(\d+))?\.bin')
@@ -244,6 +334,7 @@ def extract_info(file_path):
         sensor_id, timestamp, stat_type, metric, metric_subtype, generate_time = match_samples.groups()
         return sensor_id, timestamp, stat_type, metric, metric_subtype
     return None, None, None, None, None
+
 
 # Streamlit app
 def main(data_dir):
