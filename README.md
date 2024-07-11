@@ -1,6 +1,6 @@
 # Lens AI Monitoring Demo App
 This demo monitoring app showcases sample monitoring metrics and observability KPIs. The app is developed using streamlit
-Please explore the app: https://lensai.streamlit.app
+Please explore the app: https://lensai-demo-app.streamlit.app
 
 ## Features
 
