@@ -239,12 +239,10 @@ def plot_images(sensor_sample_images, selected_sensor, selected_timestamp):
             st.plotly_chart(fig)
 
 def plot_distance_metrics_time_series(distance_metrics_over_time):
-     """
+    """
     Plots distance metrics over time.
-
     Args:
         distance_metrics_over_time: Dictionary of distance metrics over time.
-
     Returns:
         Plotly figure.
     """
@@ -282,7 +280,6 @@ def compute_distance_metrics(stats1, stats2, metric_name):
     Returns:
         Dictionary of distance metrics.
     """
-
     def recursive_distance_computation(dict1, dict2, path=[]):
         distance_metrics = {}
         for key, value in dict1.items():
